@@ -1,8 +1,12 @@
+import { ld } from "https://x.nest.land/lodash@0.1.0/mod.ts";
+
+import { GITHUB_TOKEN } from './env.ts'
+
 import type { Maybe, PullRequestNode, Repository } from "./model.d.ts";
 
 const query = `
 query CommentsCount($after: String) {
-  repository(owner: "odkmedia", name: "odc-frontend") {
+  repository(owner: "learn-programmers", name: "prgrms-fejs") {
     pullRequests(first: 20, orderBy: { field: CREATED_AT, direction: DESC }, states: OPEN, after: $after) {
       totalCount
       pageInfo {
@@ -40,10 +44,14 @@ query CommentsCount($after: String) {
 `;
 
 const fetchGithubData = async (after?: Maybe<string>) => {
+  if (ld.isNil(GITHUB_TOKEN)) {
+    throw new Error('GITHUB_TOKEN does not received.')
+  }
+
   const response = await fetch("https://api.github.com/graphql", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${Deno.env.get("GITHUB_TOKEN")}`,
+      Authorization: `Bearer ${GITHUB_TOKEN}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

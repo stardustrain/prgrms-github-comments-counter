@@ -5,34 +5,35 @@ import { GITHUB_TOKEN } from './env.ts'
 import type { Maybe, PullRequestNode, Repository } from "./model.d.ts";
 
 const query = `
-query CommentsCount($after: String) {
-  repository(owner: "learn-programmers", name: "prgrms-fejs") {
-    pullRequests(first: 20, orderBy: { field: CREATED_AT, direction: DESC }, states: OPEN, after: $after) {
-      totalCount
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      nodes {
-        title
-        comments(first: 50) {
-          nodes {
-            author {
-              login
-            }
-            createdAt
-            bodyText
-          }
+  query CommentsCount($after: String) {
+    repository(owner: "learn-programmers", name: "prgrms-fejs") {
+      pullRequests(first: 20, orderBy: { field: CREATED_AT, direction: DESC }, states: OPEN, after: $after) {
+        totalCount
+        pageInfo {
+          hasNextPage
+          endCursor
         }
-        reviewThreads(first: 50) {
-          nodes {
-            comments(first: 50) {
-              nodes {
-                author {
-                  login
+        nodes {
+          title
+          comments(first: 50) {
+            nodes {
+              author {
+                login
+              }
+              createdAt
+              bodyText
+            }
+          }
+          reviewThreads(first: 50) {
+            nodes {
+              comments(first: 50) {
+                nodes {
+                  author {
+                    login
+                  }
+                  createdAt
+                  bodyText
                 }
-                createdAt
-                bodyText
               }
             }
           }
@@ -40,7 +41,6 @@ query CommentsCount($after: String) {
       }
     }
   }
-}
 `;
 
 const fetchGithubData = async (after?: Maybe<string>) => {

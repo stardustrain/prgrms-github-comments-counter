@@ -6,7 +6,7 @@ import {
   isCreatedInStudyWeek,
   isEnoughCommentLength,
 } from "./utils.ts";
-import { VIEW_MODE } from './env.ts'
+import { VIEW_MODE } from "./env.ts";
 
 import type { CommentNode, PullRequestNode } from "./model.d.ts";
 
@@ -21,6 +21,7 @@ try {
         pr.reviewThreads.nodes
           .flatMap((reviewThread) => reviewThread.comments.nodes)
           .concat(pr.comments.nodes)
+          .map((comment) => Object.assign(comment, { title: pr.title }))
       )
       .filter(isStudyMember)
       .filter(isCreatedInStudyWeek)
@@ -36,11 +37,14 @@ try {
   );
 
   const res = ld
-    .map(commentsGroupByAuthor, ([author, comments]: [string, CommentNode[]]) => [
-      author,
-      comments,
-      comments.length,
-    ])
+    .map(
+      commentsGroupByAuthor,
+      ([author, comments]: [string, CommentNode[]]) => [
+        author,
+        comments,
+        comments.length,
+      ]
+    )
     .sort(
       (
         prev: [string, CommentNode[], number],
@@ -56,7 +60,8 @@ try {
 
   if (ld.isNil(rawView)) {
     console.log(
-      ld.take(res, 3, null)
+      ld
+        .take(res, 3, null)
         .map(
           (sortedComment: [string, CommentNode[], number]) =>
             `${ld.first(sortedComment)}: total ${ld.last(
@@ -67,5 +72,5 @@ try {
     );
   }
 } catch (e) {
-  console.error(e)
+  console.error(e);
 }

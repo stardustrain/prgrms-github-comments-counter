@@ -26,6 +26,7 @@ export type PageInfo = {
 };
 
 export type PullRequestNode = {
+  title: string;
   comments: Comments;
   reviewThreads: ReviewThreads;
 };
